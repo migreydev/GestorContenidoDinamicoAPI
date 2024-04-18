@@ -1,4 +1,9 @@
 const url = "http://localhost:3000/contenido";
+const buttonEditar = document.createElement('button');
+buttonEditar.innerText = 'Guardar Editado';
+buttonEditar.className = 'btn btn-warning';
+
+const form = document.querySelector('form');
 
 async function getContenido() {
     
@@ -11,12 +16,6 @@ async function getContenido() {
     const contenidos = await respuesta.json();
 
     const ul = document.querySelector('#ulElemento');
-
-    const buttonEditar = document.createElement('button');
-    buttonEditar.innerText = 'Guardar Editado';
-    buttonEditar.className = 'btn btn-warning';
-
-    const form = document.querySelector('form');
 
     form.append(buttonEditar);
 
@@ -41,10 +40,8 @@ async function getContenido() {
 
             edit.addEventListener('click', async (event) => {
                 event.preventDefault();
-    
-                const urlID = `${url}/${elemento.id}`;
-                console.log(urlID);
-
+                
+                const id = document.getElementById('id');
                 const inputTitulo = document.getElementById('titulo');
                 const inputDescripcion = document.getElementById('descripcion');
                 const inputTipoContenido = document.getElementById('tipo_contenido');
@@ -52,26 +49,9 @@ async function getContenido() {
                 inputTitulo.value = elemento.titulo;
                 inputDescripcion.value = elemento.descripcion;
                 inputTipoContenido.value = elemento.tipo;
-    
-                buttonEditar.addEventListener('click', async () => {
-                    
-                    const respuesta = await fetch(urlID, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            titulo: inputTitulo.value,
-                            descripcion: inputDescripcion.value,
-                            tipo: inputTipoContenido.value
-                        })
-                    });
-    
-                    if (!respuesta.ok) {
-                        console.error('Error al editar un elemento');
-                    }
-                });
-                
+                id.value = elemento.id;
+
+
             });
             
 
@@ -93,6 +73,38 @@ async function getContenido() {
         });
     });
 }
+
+
+buttonEditar.addEventListener('click', async (event) => {
+
+    event.preventDefault();
+
+    const id = document.getElementById('id').value;
+    const urlID = `${url}/${id}`;
+    console.log(urlID);
+
+    const inputTitulo = document.getElementById('titulo');
+    const inputDescripcion = document.getElementById('descripcion');
+    const inputTipoContenido = document.getElementById('tipo_contenido');
+
+
+
+    const respuesta = await fetch(urlID, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            titulo: inputTitulo.value,
+            descripcion: inputDescripcion.value,
+            tipo: inputTipoContenido.value
+        })
+    });
+
+    if (!respuesta.ok) {
+        console.error('Error al editar un elemento');
+    }
+});
 
 async function addContenido(){
 
